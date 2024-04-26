@@ -4,20 +4,25 @@
 #include <deque>
 #include <queue>
 
+/* Currently using enum instead of enum class so I can print the types directly.
+cout << type will return 1 if it is TokenType::NUMBER if I use enum
+The same won't work in enum classes are they are strongly scoped and strongly typed
+And I'd have to use switch cases or such to check the type. */
 enum TokenType
 {
-  // TODO: Add keywords. Currently classed as IDENTIFIER
-  IDENTIFIER,         // 1
-  NUMBER,             // 2
-  BINARYOPERATOR,     // 3
-  ASSIGNMENTOPERATOR, // 4
-  OPENPARENTHESIS,    // 5
-  CLOSEPARENTHESIS,   // 6
-  INVALID,            // 7
-  SKIPPABLE,          // 8
-  ENDOFFILE,          // 9
+  // TODO: Add keywords. Currently classed as IDENTIFIER.
+  IDENTIFIER,         // 0
+  NUMBER,             // 1
+  BINARYOPERATOR,     // 2
+  ASSIGNMENTOPERATOR, // 3
+  OPENPARENTHESIS,    // 4
+  CLOSEPARENTHESIS,   // 5
+  INVALID,            // 6
+  SKIPPABLE,          // 7
+  ENDOFFILE,          // 8
 };
 
+// Type name at index corresponding to the same number in TokenType enum.
 const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "INVALID", "SKIPPABLE", "ENDOFFILE"};
 
 struct Token
@@ -34,16 +39,20 @@ struct Token
 
 class Lexer
 {
-public:
+private:
   std::string input;
-  std::deque<char> dq;
-  Lexer(std::string &inputString) : input(inputString)
+  std::deque<char> dq; // Using deque in place of queue in case I implement something like macros that needs changes in front and on the back.
+
+public:
+  Lexer(std::string inputString) : input(inputString)
   {
     for (size_t i = 0; i < input.size(); i++)
     {
       dq.push_back(input[i]);
     }
   };
+
+  // A queue works for tokens as they only need to be read by the parser.
   std::queue<Token> tokenise();
 };
 
@@ -58,7 +67,7 @@ std::queue<Token> Lexer::tokenise()
     {
       continue;
     }
-    if (front == '+' || front == '-' || front == '*' || front == '/')
+    if (front == '+' || front == '-' || front == '*' || front == '/') // Will add more. Also relational operators.
     {
       tokens.push(Token(TokenType::BINARYOPERATOR, std::string(1, front)));
     }
@@ -76,14 +85,20 @@ std::queue<Token> Lexer::tokenise()
     }
     else
     {
-      if (isdigit(front))
+      if (isdigit(front) || (front == '.' && isdigit(dq.front())))
       {
-        std::string num = "";
+        std::string num = front == '.' ? "0" : "";
         num += front;
-        while (isdigit(dq.front()))
+        front = dq.front();
+        while (!dq.empty() && (isdigit(front) || front == '.'))
         {
-          num += dq.front();
+          if (front == '.' && num.find('.') != std::string::npos)
+          {
+            return std::queue<Token>({Token(TokenType::INVALID, "Decimal error")});
+          }
+          num += front;
           dq.pop_front();
+          front = dq.front();
         }
         tokens.push(Token(TokenType::NUMBER, num));
       }
@@ -91,7 +106,7 @@ std::queue<Token> Lexer::tokenise()
       {
         std::string alpha = "";
         alpha += front;
-        while (isalpha(dq.front()))
+        while (!dq.empty() && isalpha(dq.front()))
         {
           alpha += dq.front();
           dq.pop_front();
@@ -104,6 +119,6 @@ std::queue<Token> Lexer::tokenise()
       }
     }
   }
-  tokens.push(Token(TokenType::ENDOFFILE, "ENDOFFILE"));
+  tokens.push(Token(TokenType::ENDOFFILE, "ENDOFFILE")); // Was tempted to use ENDOFLINE as a reference to Tron but ended up choosing readibility over nerdiness.
   return tokens;
 }

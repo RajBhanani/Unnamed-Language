@@ -1,3 +1,5 @@
+// USELESS FILE FOR TESTING
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -76,14 +78,20 @@ std::queue<Token> Lexer::tokenise()
     }
     else
     {
-      if (isdigit(front))
+      if (isdigit(front) || (front == '.' && isdigit(dq.front())))
       {
-        std::string num = "";
+        std::string num = front == '.' ? "0" : "";
         num += front;
-        while (isdigit(dq.front()))
+        front = dq.front();
+        while (!dq.empty() && (isdigit(front) || front == '.'))
         {
-          num += dq.front();
+          if (front == '.' && num.find('.') != std::string::npos)
+          {
+            return std::queue<Token>({Token(TokenType::INVALID, "Decimal error")});
+          }
+          num += front;
           dq.pop_front();
+          front = dq.front();
         }
         tokens.push(Token(TokenType::NUMBER, num));
       }
@@ -91,7 +99,7 @@ std::queue<Token> Lexer::tokenise()
       {
         std::string alpha = "";
         alpha += front;
-        while (isalpha(dq.front()))
+        while (!dq.empty() && isalpha(dq.front()))
         {
           alpha += dq.front();
           dq.pop_front();
@@ -110,7 +118,7 @@ std::queue<Token> Lexer::tokenise()
 
 int main()
 {
-  std::string input = "int       x       =       ((12 +     13)    / 4)  * 5     ";
+  std::string input = "int x 1.66 y";
   Lexer lx = Lexer(input);
   std::queue<Token> tokens = lx.tokenise();
   while (!tokens.empty())
