@@ -1,2 +1,2 @@
 # Unnamed Language
-Currently an unnamed langaue I am developing to learn about how languages are implemented and their internal working. The focus is on learning and noe optimisation as of now, and I am not sure about the scope of this language either.
+Currently an unnamed langaue I am developing to learn about how languages are implemented and their internal working. The focus is on learning and not optimisation as of now, and I am not sure about the scope of this language either.

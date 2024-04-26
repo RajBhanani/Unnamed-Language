@@ -107,16 +107,3 @@ std::queue<Token> Lexer::tokenise()
   tokens.push(Token(TokenType::ENDOFFILE, "ENDOFFILE"));
   return tokens;
 }
-
-int main()
-{
-  std::string input = "int       x       =       ((12 +     13)    / 4)  * 5     ";
-  Lexer lx = Lexer(input);
-  std::queue<Token> tokens = lx.tokenise();
-  while (!tokens.empty())
-  {
-    tokens.front().print();
-    tokens.pop();
-  }
-  return 0;
-}
