@@ -32,6 +32,7 @@ struct Program : Statement
     for (std::vector<Statement *>::const_iterator itr = body.begin(); itr != body.end(); ++itr)
     {
       (*itr)->print();
+      std::cout << std::endl;
     }
   }
   ~Program()
@@ -48,13 +49,21 @@ struct Expression : Statement
   virtual void print() const = 0;
 };
 
-// struct BinaryExpression : Expression
-// {
-//   NodeType kind = NodeType::BINARYEXPRESSION;
-//   Expression left;
-//   Expression right;
-//   std::string op;
-// };
+struct BinaryExpression : Expression
+{
+  Expression *left;
+  Expression *right;
+  std::string op;
+  BinaryExpression(std::string operatorString, Expression *leftExpression, Expression *rightExpression) : left(leftExpression), right(rightExpression), op(operatorString) { kind = NodeType::BINARYEXPRESSION; }
+  void print() const override
+  {
+    std::cout << "Binary Expression: {";
+    left->print();
+    std::cout << ", Operator: " << op << ", ";
+    right->print();
+    std::cout << "}";
+  }
+};
 
 struct Identifier : Expression
 {
@@ -62,7 +71,7 @@ struct Identifier : Expression
   Identifier(std::string sym) : symbol(sym) { kind = NodeType::IDENTIFIER; }
   void print() const override
   {
-    std::cout << "Identifier: " << symbol << std::endl;
+    std::cout << "Identifier: " << symbol;
   }
 };
 
@@ -72,6 +81,6 @@ struct NumericLiteral : Expression
   NumericLiteral(double val) : value(val) { kind = NodeType::NUMBERICLITERAL; }
   void print() const override
   {
-    std::cout << "Numeric Literal: " << value << std::endl;
+    std::cout << "Numeric Literal: " << value;
   }
 };

@@ -3,6 +3,7 @@
 #include <string>
 #include <deque>
 #include <queue>
+#include <unordered_map>
 
 /* Currently using enum instead of enum class so I can print the types directly.
 cout << type will return 1 if it is TokenType::NUMBER if I use enum
@@ -10,20 +11,30 @@ The same won't work in enum classes are they are strongly scoped and strongly ty
 And I'd have to use switch cases or such to check the type. */
 enum TokenType
 {
-  // TODO: Add keywords. Currently classed as IDENTIFIER.
-  IDENTIFIER,         // 0
-  NUMBER,             // 1
+  // TODO: Add more keywords. Currently classed as IDENTIFIER except let
+  IDENTIFIER, // 0
+  NUMBER,     // 1
+
   BINARYOPERATOR,     // 2
   ASSIGNMENTOPERATOR, // 3
-  OPENPARENTHESIS,    // 4
-  CLOSEPARENTHESIS,   // 5
-  INVALID,            // 6
-  SKIPPABLE,          // 7
-  ENDOFFILE,          // 8
+
+  OPENPARENTHESIS,  // 4
+  CLOSEPARENTHESIS, // 5
+
+  // Keywords
+  LET, // 6
+
+  INVALID,
+  SKIPPABLE,
+  ENDOFFILE,
 };
 
+// Constant average lookup of keywords. May change the declaration or with another data structure if I find any way to optimise this.
+const std::unordered_map<std::string, TokenType> Keywords = {
+    {"let", TokenType::LET}};
+
 // Type name at index corresponding to the same number in TokenType enum.
-const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "INVALID", "SKIPPABLE", "ENDOFFILE"};
+const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "LET", "INVALID", "SKIPPABLE", "ENDOFFILE"};
 
 struct Token
 {
@@ -111,7 +122,14 @@ std::queue<Token> Lexer::tokenise()
           alpha += dq.front();
           dq.pop_front();
         }
-        tokens.push(Token(TokenType::IDENTIFIER, alpha));
+        if (Keywords.find(alpha) != Keywords.end())
+        {
+          tokens.push(Token(Keywords.at(alpha), alpha));
+        }
+        else
+        {
+          tokens.push(Token(TokenType::IDENTIFIER, alpha));
+        }
       }
       else
       {

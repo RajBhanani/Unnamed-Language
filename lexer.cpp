@@ -5,22 +5,32 @@
 #include <string>
 #include <deque>
 #include <queue>
+#include <unordered_map>
 
 enum TokenType
 {
-  // TODO: Add keywords. Currently classed as IDENTIFIER
-  IDENTIFIER,         // 1
-  NUMBER,             // 2
-  BINARYOPERATOR,     // 3
-  ASSIGNMENTOPERATOR, // 4
-  OPENPARENTHESIS,    // 5
-  CLOSEPARENTHESIS,   // 6
-  INVALID,            // 7
-  SKIPPABLE,          // 8
-  ENDOFFILE,          // 9
+  // TODO: Add more keywords. Currently classed as IDENTIFIER except let
+  IDENTIFIER, // 0
+  NUMBER,     // 1
+
+  BINARYOPERATOR,     // 2
+  ASSIGNMENTOPERATOR, // 3
+
+  OPENPARENTHESIS,  // 4
+  CLOSEPARENTHESIS, // 5
+
+  // Keywords
+  LET, // 6
+
+  INVALID,
+  SKIPPABLE,
+  ENDOFFILE,
 };
 
-const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "INVALID", "SKIPPABLE", "ENDOFFILE"};
+const std::unordered_map<std::string, TokenType> Keywords{
+    {"let", TokenType::LET}};
+
+const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "LET", "INVALID", "SKIPPABLE", "ENDOFFILE"};
 
 struct Token
 {
@@ -104,7 +114,14 @@ std::queue<Token> Lexer::tokenise()
           alpha += dq.front();
           dq.pop_front();
         }
-        tokens.push(Token(TokenType::IDENTIFIER, alpha));
+        if (Keywords.find(alpha) != Keywords.end())
+        {
+          tokens.push(Token(Keywords.at(alpha), alpha));
+        }
+        else
+        {
+          tokens.push(Token(TokenType::IDENTIFIER, alpha));
+        }
       }
       else
       {
@@ -118,7 +135,7 @@ std::queue<Token> Lexer::tokenise()
 
 int main()
 {
-  std::string input = "int x 1.66 y";
+  std::string input = "let x 1.66 y";
   Lexer lx = Lexer(input);
   std::queue<Token> tokens = lx.tokenise();
   while (!tokens.empty())
