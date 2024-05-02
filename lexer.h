@@ -22,7 +22,8 @@ enum TokenType
   CLOSEPARENTHESIS, // 5
 
   // Keywords
-  LET, // 6
+  LET,       // 6
+  NULLTOKEN, // 7    NULL is a reserved token in C++
 
   INVALID,
   SKIPPABLE,
@@ -30,11 +31,13 @@ enum TokenType
 };
 
 // Constant average lookup of keywords. May change the declaration or with another data structure if I find any way to optimise this.
-const std::unordered_map<std::string, TokenType> Keywords = {
-    {"let", TokenType::LET}};
+const std::unordered_map<std::string, TokenType> Keywords{
+    {"let", TokenType::LET},
+    {"null", TokenType::NULLTOKEN},
+};
 
 // Type name at index corresponding to the same number in TokenType enum.
-const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "LET", "INVALID", "SKIPPABLE", "ENDOFFILE"};
+const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "LET", "NULLTOKEN", "INVALID", "SKIPPABLE", "ENDOFFILE"};
 
 struct Token
 {

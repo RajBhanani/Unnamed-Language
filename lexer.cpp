@@ -20,7 +20,8 @@ enum TokenType
   CLOSEPARENTHESIS, // 5
 
   // Keywords
-  LET, // 6
+  LET,      // 6
+  NULLTOKEN, // 7    NULL is a reserved token in C++
 
   INVALID,
   SKIPPABLE,
@@ -28,9 +29,11 @@ enum TokenType
 };
 
 const std::unordered_map<std::string, TokenType> Keywords{
-    {"let", TokenType::LET}};
+    {"let", TokenType::LET},
+    {"null", TokenType::NULLTOKEN},
+};
 
-const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "LET", "INVALID", "SKIPPABLE", "ENDOFFILE"};
+const std::string TokenTypeArray[] = {"IDENTIFIER", "NUMBER", "BINARYOPERATOR", "ASSIGNMENTOPERATOR", "OPENPARENTHESIS", "CLOSEPARENTHESIS", "LET", "NULLTOKEN", "INVALID", "SKIPPABLE", "ENDOFFILE"};
 
 struct Token
 {
@@ -135,7 +138,7 @@ std::queue<Token> Lexer::tokenise()
 
 int main()
 {
-  std::string input = "let x 1.66 y";
+  std::string input = "let x = null";
   Lexer lx = Lexer(input);
   std::queue<Token> tokens = lx.tokenise();
   while (!tokens.empty())

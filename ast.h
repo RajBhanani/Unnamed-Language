@@ -6,14 +6,15 @@
 enum class NodeType
 {
   PROGRAM,
-  NUMBERICLITERAL,
+  NULLLITERAL,
+  NUMERICLITERAL,
   IDENTIFIER,
   BINARYEXPRESSION
 };
 
 struct Statement
 {
-  NodeType kind;
+  NodeType type;
   virtual void print() const = 0; // Pure virual function as there will be no nodes of this type.
 };
 
@@ -25,7 +26,7 @@ struct Program : Statement
     p->methodFromChild() calls methods from the children.
   */
   std::vector<Statement *> body;
-  Program() { kind = NodeType::PROGRAM; }
+  Program() { type = NodeType::PROGRAM; }
   void print() const override
   {
     std::cout << "Program:" << std::endl;
@@ -54,7 +55,12 @@ struct BinaryExpression : Expression
   Expression *left;
   Expression *right;
   std::string op;
-  BinaryExpression(std::string operatorString, Expression *leftExpression, Expression *rightExpression) : left(leftExpression), right(rightExpression), op(operatorString) { kind = NodeType::BINARYEXPRESSION; }
+  BinaryExpression(std::string operatorString, Expression *leftExpression, Expression *rightExpression) : left(leftExpression), right(rightExpression), op(operatorString) { type = NodeType::BINARYEXPRESSION; }
+  ~BinaryExpression()
+  {
+    delete left;
+    delete right;
+  }
   void print() const override
   {
     std::cout << "Binary Expression: {";
@@ -68,7 +74,7 @@ struct BinaryExpression : Expression
 struct Identifier : Expression
 {
   std::string symbol;
-  Identifier(std::string sym) : symbol(sym) { kind = NodeType::IDENTIFIER; }
+  Identifier(std::string sym) : symbol(sym) { type = NodeType::IDENTIFIER; }
   void print() const override
   {
     std::cout << "Identifier: " << symbol;
@@ -78,9 +84,19 @@ struct Identifier : Expression
 struct NumericLiteral : Expression
 {
   double value;
-  NumericLiteral(double val) : value(val) { kind = NodeType::NUMBERICLITERAL; }
+  NumericLiteral(double val) : value(val) { type = NodeType::NUMERICLITERAL; }
   void print() const override
   {
     std::cout << "Numeric Literal: " << value;
+  }
+};
+
+struct NullLiteral : Expression
+{
+  std::string const value = "null";
+  NullLiteral() { type = NodeType::NULLLITERAL; }
+  void print() const override
+  {
+    std::cout << "Null Literal: " << value;
   }
 };

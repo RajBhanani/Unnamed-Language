@@ -1,2 +1,4 @@
 dump.cpp
 printAll.h
+lexer.cpp
+parser.cpp

@@ -16,7 +16,7 @@ private:
   Expression *parsePrimaryExpression();
 
 public:
-  void produceAST(std::string sourceCode);
+  Program produceAST(std::string sourceCode);
 };
 
 bool Parser::notEOF()
@@ -107,7 +107,7 @@ Expression *Parser::parsePrimaryExpression()
   }
 }
 
-void Parser::produceAST(std::string sourceCode)
+Program Parser::produceAST(std::string sourceCode)
 {
   Lexer lx = Lexer(sourceCode);
   tokens = lx.tokenise();
@@ -115,12 +115,5 @@ void Parser::produceAST(std::string sourceCode)
   {
     program.body.push_back(parseStatemet());
   }
-  program.print();
-}
-
-int main()
-{
-  Parser p;
-  p.produceAST("10 null");
-  return 0;
+  return program;
 }
